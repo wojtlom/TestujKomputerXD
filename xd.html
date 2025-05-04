@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XDDD</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f0f0f0;
+            overflow: hidden;
+            user-select: none;
+            cursor: not-allowed;
+        }
+        #prankButton {
+            padding: 20px 40px;
+            font-size: 24px;
+            background-color: #FF0000;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.5);
+        }
+        .flying-window {
+            position: absolute;
+            width: 250px;
+            height: 150px;
+            background-color: #ff0000;
+            color: white;
+            border: 3px solid black;
+            padding: 15px;
+            font-weight: bold;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            pointer-events: none; /* Zapobiega blokowaniu kliknięć */
+        }
+        .fullscreen-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            color: #FF0000;
+            font-size: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: flash 0.3s infinite;
+        }
+        @keyframes flash {
+            0% { background-color: #000; color: #FF0000; }
+            50% { background-color: #FF0000; color: #000; }
+            100% { background-color: #000; color: #FF0000; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Cześć! Zobacz co robi ta strona 👇</h1>
+    <button id="prankButton">Kliknij ten przycisk</button>
+
+    <!-- Głośny, irytujący dźwięk (automatyczny loop) -->
+    <audio id="scarySound" loop>
+        <source src="https://assets.mixkit.co/active_storage/sfx/999/999.wav" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let chaosActive = false;
+        const flyingWindows = [];
+        const intervals = [];
+
+        // Blokada zamknięcia okna
+        window.onbeforeunload = function(e) {
+            if (chaosActive) {
+                e.preventDefault();
+                e.returnValue = "NIE MA UCIEKANIA";
+                return "NIE MA UCIEKANIA";
+            }
+        };
+
+        // Blokada prawego przycisku myszy
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            alert("NIE MOŻESZ UŻYWAĆ PRAWEGO PRZYCISKU MYSZY!");
+        });
+
+        // Główna funkcja pranka
+        function startChaos() {
+            chaosActive = true;
+            document.body.style.cursor = "not-allowed";
+
+            // 1. GŁOŚNY DŹWIĘK (LOOP)
+            const sound = document.getElementById('scarySound');
+            sound.volume = 1.0;
+            sound.play().catch(e => console.log("Nie udało się odtworzyć dźwięku:", e));
+
+            // 2. TWORZENIE LATAJĄCYCH OKIEN (50 SZTUK)
+            for (let i = 0; i < 50; i++) {
+                createFlyingWindow(i);
+            }
+
+            // 3. FAŁSZYWE ALERTY CO 2 SEKUNDY
+            const fakeAlerts = [
+                "WYKRYTO WIRUSA!",
+                "TWÓJ KOMPUTER ZOSTAŁ ZHAKOWANY!",
+                "PŁACZ...",
+                "WSZYSTKIE TWOJE HASŁA WYCIEKŁY!",
+                "PODŁĄCZ URZĄDZENIE USB, ABY ODZYSKAĆ DOSTĘP!",
+                "FORMATOWANIE DYSKU C: W TOKU...",
+                "POBRANO TROJANA!",
+                "SYSTEM ZOSTAŁ ZARAŻONY!",
+                "ZŁAPANY! NIE UDA CI SIĘ UCIEC!",
+                "PRZEGLĄDARKA ZOSTAŁA PRZEJĘTA!"
+            ];
+            const alertInterval = setInterval(() => {
+                if (chaosActive) alert(fakeAlerts[Math.floor(Math.random() * fakeAlerts.length)]);
+            }, 2000);
+            intervals.push(alertInterval);
+
+            // 4. SYMULACJA POBRANIA 20 PLIKÓW
+            const fakeFiles = [
+                "virus.exe", "trojan.dll", "bitcoin_miner.js", 
+                "keylogger.zip", "ransomware.pdf", "spyware.msi",
+                "malware_installer.bat", "stolen_data.rar", "backdoor.txt"
+            ];
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    if (!chaosActive) return;
+                    const fakeLink = document.createElement('a');
+                    fakeLink.href = URL.createObjectURL(new Blob([`FAKE MALWARE CONTENT ${Math.random()}`], {type: 'application/octet-stream'}));
+                    fakeLink.download = fakeFiles[Math.floor(Math.random() * fakeFiles.length)];
+                    fakeLink.click();
+                }, i * 1000);
+            }
+
+            // 5. ZMIANA TYTUŁU STRONY CO SEKUNDĘ
+            const scaryTitles = [
+                "💀 ZŁAPANY! 💀", 
+                "🔥 SYSTEM ZARAŻONY! 🔥", 
+                "🚨 WIRUS AKTYWNY! 🚨", 
+                "⚠️ TWOJE HASŁA WYCIEKŁY! ⚠️", 
+                "☠️ NIE UCIECZESZ! ☠️"
+            ];
+            const titleInterval = setInterval(() => {
+                if (chaosActive) document.title = scaryTitles[Math.floor(Math.random() * scaryTitles.length)];
+            }, 1000);
+            intervals.push(titleInterval);
+
+            // 6. PEŁNOEKRAWOWY CZERWONY ALERT (CO 5 SEKUND)
+            const fullscreenInterval = setInterval(() => {
+                if (!chaosActive) return;
+                const fullscreenAlert = document.createElement('div');
+                fullscreenAlert.className = 'fullscreen-alert';
+                fullscreenAlert.textContent = "🚨 SYSTEM ZOSTAŁ ZAKAŻONY! 🚨";
+                document.body.appendChild(fullscreenAlert);
+                setTimeout(() => fullscreenAlert.remove(), 2000);
+            }, 5000);
+            intervals.push(fullscreenInterval);
+        }
+
+        // FUNKCJA TWORZĄCA LATAJĄCE OKNA (TERAZ NA PEWNO DZIAŁA!)
+        function createFlyingWindow(id) {
+            const windowElement = document.createElement('div');
+            windowElement.className = 'flying-window';
+            windowElement.textContent = `BŁĄD KRYTYCZNY! (${id + 1})`;
+            document.body.appendChild(windowElement);
+
+            // Losowa pozycja startowa
+            let x = Math.random() * (window.innerWidth - 250);
+            let y = Math.random() * (window.innerHeight - 150);
+            
+            // Losowa prędkość (większa niż wcześniej)
+            let xSpeed = (Math.random() - 0.5) * 10;
+            let ySpeed = (Math.random() - 0.5) * 10;
+
+            // Funkcja animacji
+            function animate() {
+                if (!chaosActive) return;
+
+                x += xSpeed;
+                y += ySpeed;
+
+                // Odbicie od krawędzi
+                if (x <= 0 || x >= window.innerWidth - 250) xSpeed *= -1;
+                if (y <= 0 || y >= window.innerHeight - 150) ySpeed *= -1;
+
+                windowElement.style.left = x + 'px';
+                windowElement.style.top = y + 'px';
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+            flyingWindows.push(windowElement);
+        }
+
+        // FUNKCJA STOPUJĄCA CHAOS (po naciśnięciu "S")
+        function stopChaos() {
+            if (!chaosActive) return;
+            chaosActive = false;
+
+            // Wyłącz dźwięk
+            const sound = document.getElementById('scarySound');
+            sound.pause();
+            sound.currentTime = 0;
+
+            // Wyczyść interwały
+            intervals.forEach(interval => clearInterval(interval));
+            intervals.length = 0;
+
+            // Usuń latające okna
+            flyingWindows.forEach(win => win.remove());
+            flyingWindows.length = 0;
+
+            // Przywróć tytuł strony
+            document.title = "CHAOS ZATRZYMANY!";
+
+            // Przywróć kursor
+            document.body.style.cursor = "default";
+
+            // Wyświetl komunikat
+            alert("Udało Ci się zatrzymać chaos!");
+        }
+
+        // START PRANKA PO KLIKNIĘCIU PRZYCISKU
+        document.getElementById('prankButton').addEventListener('click', startChaos);
+
+        // ZATRZYMAJ CHAOS PO NACISNIĘCIU "S"
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 's' && chaosActive) {
+                stopChaos();
+            }
+        });
+    </script>
+</body>
+</html>
